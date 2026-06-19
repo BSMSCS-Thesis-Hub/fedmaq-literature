@@ -1,0 +1,114 @@
+"""fedmaq-lit CLI — convert, ingest, query, summarize, approve."""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+from fedmaq_literature.registry import parse_registry
+
+
+def _cmd_convert(args: argparse.Namespace) -> int:
+    from fedmaq_literature.convert import convert_paper
+
+    pdf_path = Path(args.pdf).resolve() if args.pdf else None
+    try:
+        output = convert_paper(
+            args.slug,
+            pdf_path=pdf_path,
+            force_marker=args.force_marker,
+            skip_marker_fallback=args.no_marker_fallback,
+        )
+    except (FileNotFoundError, KeyError, RuntimeError) as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 1
+
+    qa = output.qa
+    print(f"converted {args.slug} with {output.converter}")
+    if qa:
+        status = "passed" if qa.passed else "failed"
+        print(f"qa: {status} ({qa.char_count} chars)")
+        if qa.reasons:
+            print(f"qa notes: {', '.join(qa.reasons)}")
+    return 0 if qa and qa.passed else 2
+
+
+def _cmd_ingest(args: argparse.Namespace) -> int:
+    code = _cmd_convert(args)
+    if code != 0 or args.convert_only:
+        if args.convert_only and code == 0:
+            print("convert-only: skipping Chroma indexing (not yet implemented).")
+        return code
+
+    print("index: Chroma ingest not yet implemented (see HANDOFF queue P2).")
+    return 0
+
+
+def _cmd_list_slugs(_: argparse.Namespace) -> int:
+    entries = parse_registry()
+    if not entries:
+        print("No slugs found in paper_registry.md")
+        return 1
+    for entry in entries:
+        print(f"{entry.slug}\t{entry.conversion}\t{entry.pdf_label}")
+    return 0
+
+
+def _add_convert_flags(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--slug", required=True, help="Paper slug from paper_registry.md"
+    )
+    parser.add_argument(
+        "--pdf", help="Override PDF path (default: resolve from registry)"
+    )
+    parser.add_argument(
+        "--force-marker",
+        action="store_true",
+        help="Skip Docling and convert with Marker only",
+    )
+    parser.add_argument(
+        "--no-marker-fallback",
+        action="store_true",
+        help="Do not fall back to Marker when Docling QA fails",
+    )
+
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(prog="fedmaq-lit")
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    convert_parser = sub.add_parser("convert", help="Convert PDF to markdown with QA")
+    _add_convert_flags(convert_parser)
+    convert_parser.set_defaults(handler=_cmd_convert)
+
+    ingest_parser = sub.add_parser("ingest", help="Convert PDF, QA, index into Chroma")
+    _add_convert_flags(ingest_parser)
+    ingest_parser.add_argument(
+        "--convert-only",
+        action="store_true",
+        help="Run conversion only; skip embedding/indexing",
+    )
+    ingest_parser.set_defaults(handler=_cmd_ingest)
+
+    list_parser = sub.add_parser("list-slugs", help="List slugs from paper_registry.md")
+    list_parser.set_defaults(handler=_cmd_list_slugs)
+
+    for name in ("query", "summarize", "approve", "approve-synthesis"):
+        stub = sub.add_parser(name, help=f"{name} (not yet implemented)")
+        stub.set_defaults(handler=_stub_handler(name))
+
+    args = parser.parse_args(argv)
+    return args.handler(args)
+
+
+def _stub_handler(command: str):
+    def handler(_: argparse.Namespace) -> int:
+        print(f"fedmaq-lit {command}: not yet implemented (see HANDOFF queue).")
+        return 0
+
+    return handler
+
+
+if __name__ == "__main__":
+    sys.exit(main())
