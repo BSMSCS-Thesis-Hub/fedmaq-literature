@@ -1,0 +1,19 @@
+slug: he-2025-feddt
+pdf: papers/He et al. - 2025 - FedDT A Communication-Efficient Federated Learning
+  via Knowledge Distillation and Ternary Compressi.pdf
+converter: docling
+converted_at: '2026-06-21T08:20:32.060444+00:00'
+page_count: 32
+char_count: 71252
+qa:
+  passed: true
+  confidence: 0.9626004999074596
+  mean_grade: excellent
+  low_grade: excellent
+  char_count: 71252
+  page_count: 32
+  reasons: []
+confidence:
+  mean_grade: excellent
+  low_grade: excellent
+  mean_score: 0.9626004999074596

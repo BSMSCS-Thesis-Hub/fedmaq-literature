@@ -10,12 +10,12 @@ Track conversion, indexing, and summary status. Run `fedmaq-lit ingest --slug <s
 | reisizadeh-2020-fedpaq                   | Reisizadeh et al. - 2020 - FedPAQ...                                                              | FedPAQ     | ready      | none    | quantization        |
 | song-2024-feddistill                     | Song et al. - 2024 - FedDistill...                                                                | FedDistill | ready      | none    | kd                  |
 | liu-2023-adagq                           | Liu et al. - 2023 - Communication-Efficient Federated Learning                                    | AdaGQ      | ready      | none    | adaptive            |
-| cui-2026-laq-hc                          | Cui et al. - 2026 - Lightweight Adaptive Quantization...                                          | LAQ-HC     | none       | none    | adaptive            |
-| he-2025-dynfed                           | He et al. - 2025 - DynFed...                                                                      | DynFed     | none       | none    | sota, kd            |
-| wang-2026-adadq-kd                       | Wang et al. - 2026 - AdaDQ-KD...                                                                  | AdaDQ-KD   | none       | none    | sota, kd            |
-| he-2025-feddt                            | He et al. - 2025 - FedDT...                                                                       | FedDT      | none       | none    | sota, kd            |
+| cui-2026-laq-hc                          | Cui et al. - 2026 - Lightweight Adaptive Quantization...                                          | LAQ-HC     | ready      | none    | adaptive            |
+| he-2025-dynfed                           | He et al. - 2025 - DynFed...                                                                      | DynFed     | ready      | none    | sota, kd            |
+| wang-2026-adadq-kd                       | Wang et al. - 2026 - AdaDQ-KD...                                                                  | AdaDQ-KD   | ready      | none    | sota, kd            |
+| he-2025-feddt                            | He et al. - 2025 - FedDT...                                                                       | FedDT      | ready      | none    | sota, kd            |
 | hinton-2015-distillation                 | Hinton et al. - 2015 - Distilling the Knowledge...                                                | —          | ready      | none    | kd, survey          |
-| jimenez-2024-non-iid-survey              | Jimenez et al. - 2024 - Non-IID data in Federated Learning                                        | —          | none       | none    | heterogeneity       |
+| jimenez-2024-non-iid-survey              | Jimenez et al. - 2024 - Non-IID data in Federated Learning                                        | —          | ready      | none    | heterogeneity       |
 | qin-2025-kd-survey                       | Qin et al. - 2025 - Knowledge Distillation in Federated Learning                                  | —          | none       | none    | kd, survey          |
 | abdulla-2024-smart-meter                 | Abdulla et al. - 2024 - Smart meter-based energy consumption forecasting...                       | —          | none       | none    | application         |
 | alterkawi-2025-smart-cities-review       | Alterkawi and Dib - 2025 - Federated Learning for Smart Cities A Thematic Review...               | —          | none       | none    | survey              |

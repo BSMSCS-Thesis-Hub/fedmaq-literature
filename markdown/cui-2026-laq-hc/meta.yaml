@@ -1,0 +1,19 @@
+slug: cui-2026-laq-hc
+pdf: papers/Cui et al. - 2026 - Lightweight Adaptive Quantization Algorithms for Federated
+  Learning With Heterogeneous Clients.pdf
+converter: docling
+converted_at: '2026-06-21T06:51:10.645581+00:00'
+page_count: 16
+char_count: 110165
+qa:
+  passed: true
+  confidence: 0.9631027743530758
+  mean_grade: excellent
+  low_grade: excellent
+  char_count: 110165
+  page_count: 16
+  reasons: []
+confidence:
+  mean_grade: excellent
+  low_grade: excellent
+  mean_score: 0.9631027743530758

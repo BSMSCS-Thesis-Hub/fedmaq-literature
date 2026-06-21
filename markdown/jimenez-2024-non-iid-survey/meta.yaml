@@ -1,0 +1,19 @@
+slug: jimenez-2024-non-iid-survey
+pdf: papers/Jimenez et al. - 2024 - Non-IID data in Federated Learning A Survey with
+  Taxonomy, Metrics, Methods, Frameworks and Future.pdf
+converter: docling
+converted_at: '2026-06-21T08:28:38.183160+00:00'
+page_count: 25
+char_count: 146298
+qa:
+  passed: true
+  confidence: 0.9684261174075905
+  mean_grade: excellent
+  low_grade: excellent
+  char_count: 146298
+  page_count: 25
+  reasons: []
+confidence:
+  mean_grade: excellent
+  low_grade: excellent
+  mean_score: 0.9684261174075905

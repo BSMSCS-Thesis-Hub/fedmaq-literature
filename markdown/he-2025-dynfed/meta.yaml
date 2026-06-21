@@ -1,0 +1,19 @@
+slug: he-2025-dynfed
+pdf: papers/He et al. - 2025 - DynFed Adaptive Federated Learning via Quantization-Aware
+  Knowledge Distillation.pdf
+converter: docling
+converted_at: '2026-06-21T07:25:10.873728+00:00'
+page_count: 9
+char_count: 71598
+qa:
+  passed: true
+  confidence: 0.9594736069003384
+  mean_grade: excellent
+  low_grade: excellent
+  char_count: 71598
+  page_count: 9
+  reasons: []
+confidence:
+  mean_grade: excellent
+  low_grade: excellent
+  mean_score: 0.9594736069003384
