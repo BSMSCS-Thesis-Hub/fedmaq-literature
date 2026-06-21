@@ -14,7 +14,7 @@ from llama_index.vector_stores.chroma import ChromaVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from fedmaq_literature.paths import markdown_dir, storage_dir, registry_path
-from fedmaq_literature.registry import parse_registry
+from fedmaq_literature.registry import parse_registry, update_registry_indexing
 from fedmaq_literature.ingest import (
     DEFAULT_EMBED_MODEL,
     EMBED_BATCH_SIZE,
@@ -148,6 +148,14 @@ def run_ingest(
         vector_store=vector_store,
     )
 
-    pipeline.run(documents=documents)
-    print("Ingestion completed successfully.")
-    return 0
+    try:
+        pipeline.run(documents=documents)
+        print("Ingestion completed successfully.")
+        for doc in documents:
+            update_registry_indexing(doc.metadata["slug"], "ready", root=root)
+        return 0
+    except Exception as e:
+        print(f"Error running ingestion: {e}")
+        for doc in documents:
+            update_registry_indexing(doc.metadata["slug"], "failed", root=root)
+        return 1
