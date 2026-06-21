@@ -41,13 +41,25 @@ def _confidence_fields(result) -> tuple[str | None, str | None, float | None, di
 def convert_pdf(pdf_path: Path) -> ConvertOutput:
     """Convert a PDF with Docling and run QA on the markdown output."""
     try:
-        from docling.document_converter import ConversionStatus, DocumentConverter
+        from docling.datamodel.base_models import InputFormat
+        from docling.datamodel.pipeline_options import PdfPipelineOptions
+        from docling.document_converter import (
+            ConversionStatus,
+            DocumentConverter,
+            PdfFormatOption,
+        )
     except ImportError as exc:
         raise RuntimeError(
             "Docling is not installed. Run: uv sync --extra convert"
         ) from exc
 
-    converter = DocumentConverter()
+    pipeline_options = PdfPipelineOptions()
+    pipeline_options.do_formula_enrichment = True
+    converter = DocumentConverter(
+        format_options={
+            InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+        }
+    )
     try:
         result = converter.convert(str(pdf_path))
     except Exception as exc:

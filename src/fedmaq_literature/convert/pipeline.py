@@ -103,6 +103,105 @@ def _finalize(
     return output
 
 
+def _clean_math_block(math_content: str) -> str:
+    import re
+
+    # Match \intertext followed by curly braces
+    intertext_regex = re.compile(r"\\intertext\s*\{([^}]+)\}")
+
+    if intertext_regex.search(math_content):
+        # Split equation on intertext and rebuild
+        parts = []
+        last_idx = 0
+        for match in intertext_regex.finditer(math_content):
+            start, end = match.span()
+            text_content = match.group(1).strip()
+            # Left part (before \intertext)
+            left = math_content[last_idx:start].strip()
+            if left:
+                left_cleaned = _clean_math_block(left)
+                if left_cleaned.strip().startswith("$$"):
+                    parts.append(left_cleaned)
+                else:
+                    parts.append(f"$$\n{left_cleaned}\n$$")
+            # The text itself
+            parts.append(text_content)
+            last_idx = end
+        # Right part (after last \intertext)
+        right = math_content[last_idx:].strip()
+        if right:
+            right_cleaned = _clean_math_block(right)
+            if right_cleaned.strip().startswith("$$"):
+                parts.append(right_cleaned)
+            else:
+                parts.append(f"$$\n{right_cleaned}\n$$")
+        return "\n\n".join(parts)
+
+    content = math_content.strip()
+
+    # Strip \begin{equation} or \begin{equation*} wrappers (with optional \label)
+    equation_start = re.match(
+        r"^\\begin\{equation\*?\}(?:\s*\\label\{[^}]*\})?", content
+    )
+    if equation_start:
+        start_len = equation_start.end()
+        if content.endswith("\\end{equation}"):
+            content = content[start_len : -len("\\end{equation}")].strip()
+        elif content.endswith("\\end{equation*}"):
+            content = content[start_len : -len("\\end{equation*}")].strip()
+
+    has_alignment = "&" in content or "\\\\" in content
+
+    # Check if the content is wrapped in common alignment environments
+    wrapped_envs = (
+        "aligned",
+        "align",
+        "matrix",
+        "cases",
+        "split",
+        "array",
+        "pmatrix",
+        "bmatrix",
+        "vmatrix",
+        "Vmatrix",
+    )
+    is_wrapped = any(content.startswith(f"\\begin{{{env}}}") for env in wrapped_envs)
+
+    if has_alignment and not is_wrapped:
+        if content.endswith("\\\\"):
+            content = content[:-2].strip()
+        return f"\\begin{{aligned}}\n{content}\n\\end{{aligned}}"
+
+    return content
+
+
+def _post_process_markdown(markdown_text: str) -> str:
+    import re
+
+    block_pattern = re.compile(r"\$\$(.*?)\$\$", re.DOTALL)
+
+    def replace_block(match):
+        content = match.group(1)
+        cleaned = _clean_math_block(content)
+        if cleaned.strip().startswith("$$"):
+            return cleaned
+        return f"$$\n{cleaned.strip()}\n$$"
+
+    processed = block_pattern.sub(replace_block, markdown_text)
+
+    # Convert inline math containing & or \\ to block math wrapped in aligned
+    inline_pattern = re.compile(r"(?<!\$)\$(?!\$)(.*?)(?<!\$)\$(?!\$)")
+
+    def replace_inline(match):
+        content = match.group(1)
+        if "&" in content or "\\\\" in content:
+            cleaned = _clean_math_block(content)
+            return f"\n$$\n{cleaned.strip()}\n$$\n"
+        return f"${content}$"
+
+    return inline_pattern.sub(replace_inline, processed)
+
+
 def write_conversion(
     slug: str, output: ConvertOutput, *, root: Path | None = None
 ) -> Path:
@@ -112,7 +211,8 @@ def write_conversion(
     out_dir.mkdir(parents=True, exist_ok=True)
 
     paper_path = out_dir / "paper.md"
-    paper_path.write_text(output.markdown, encoding="utf-8")
+    cleaned_md = _post_process_markdown(output.markdown)
+    paper_path.write_text(cleaned_md, encoding="utf-8")
 
     qa_dict = asdict(output.qa) if output.qa else None
     meta = {
