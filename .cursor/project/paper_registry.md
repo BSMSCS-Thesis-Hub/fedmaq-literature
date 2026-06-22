@@ -4,7 +4,7 @@ Track conversion, indexing, and summary status. Run `fedmaq-lit ingest --slug <s
 
 | Slug                                     | PDF                                                                                               | Baseline   | Conversion | Indexing | Summary | Tags                |
 | ---------------------------------------- | ------------------------------------------------------------------------------------------------- | ---------- | ---------- | -------- | ------- | ------------------- |
-| mcmahan-2017-fedavg                      | McMahan et al. - 2017 - Communication-Efficient Learning...                                       | FedAvg     | ready      | ready    | none    | vanilla             |
+| mcmahan-2017-fedavg | McMahan et al. - 2017 - Communication-Efficient Learning... | FedAvg | ready | ready | none | vanilla |
 | li-2020-fedprox                          | Li et al. - 2020 - Federated Optimization in Heterogeneous Networks                               | FedProx    | ready      | ready    | none    | vanilla             |
 | honig-2022-dadaquant                     | Hönig et al. - 2022 - DAdaQuant...                                                                | DAdaQuant  | ready      | ready    | none    | quantization        |
 | reisizadeh-2020-fedpaq                   | Reisizadeh et al. - 2020 - FedPAQ...                                                              | FedPAQ     | ready      | ready    | none    | quantization        |
