@@ -75,7 +75,10 @@ def run_summarize(
                 "You are an expert researcher in Federated Learning (FL), Model Compression, "
                 "Quantization, and Knowledge Distillation (KD). Your job is to read an academic "
                 "paper and produce a structured, high-quality, professional Markdown summary "
-                "focusing on methodology, mathematical formulas, and relevance to communication efficiency."
+                "focusing on methodology, mathematical formulas, and relevance to communication efficiency.\n"
+                "CRITICAL: Use standard LaTeX formatting for all mathematical expressions (e.g., use block `$$` or `\\[ ... \\]` and inline `$` or `\\( ... \\)`). "
+                "Do NOT replace underscores (`_`) with asterisks (`*`) inside mathematical expressions (e.g., write `\\sum_{i=1}^n` and `w_{t+1}`, NEVER `\\sum*{i=1}^n` or `w*{t+1}`). "
+                "Do NOT backslash-escape underscores inside mathematical expressions."
             )
 
             prompt = (
