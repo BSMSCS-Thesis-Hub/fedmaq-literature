@@ -167,6 +167,11 @@ def _clean_math_block(math_content: str) -> str:
         if content == prev:
             break
 
+    # Clean up excessive spacing/newlines
+    content = re.sub(r"\n\s*\n", "\n", content).strip()
+    if not content or content == r"\quad" or content == r"\\":
+        return ""
+
     has_alignment = "&" in content or "\\\\" in content
 
     # Check if the content is wrapped in common alignment environments
@@ -199,7 +204,9 @@ def _post_process_markdown(markdown_text: str) -> str:
 
     def replace_block(match):
         content = match.group(1)
-        cleaned = _clean_math_block(content)
+        cleaned = _clean_math_block(content).strip()
+        if not cleaned:
+            return ""
         if cleaned.strip().startswith("$$"):
             return cleaned
         return f"$$\n{cleaned.strip()}\n$$"
@@ -212,7 +219,9 @@ def _post_process_markdown(markdown_text: str) -> str:
     def replace_inline(match):
         content = match.group(1)
         if "&" in content or "\\\\" in content:
-            cleaned = _clean_math_block(content)
+            cleaned = _clean_math_block(content).strip()
+            if not cleaned:
+                return ""
             return f"\n$$\n{cleaned.strip()}\n$$\n"
         return f"${content}$"
 
