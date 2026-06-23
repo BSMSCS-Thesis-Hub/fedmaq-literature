@@ -7,6 +7,7 @@ Of course. Here is a structured research summary of the provided paper, focusing
 This paper is a comprehensive survey on the challenges of **Non-IID (non-independent and identically distributed) data** in Federated Learning (FL). The core problem is that when data across different clients is heterogeneous, standard FL algorithms like FedAvg suffer from **slower convergence, reduced model accuracy, and increased communication overhead**.
 
 The main objectives of the survey are to:
+
 - Provide a detailed **taxonomy** of non-IID data types.
 - Catalog and analyze **partition protocols** used to simulate non-IID scenarios.
 - Review **metrics** for quantifying data heterogeneity.
@@ -26,34 +27,43 @@ As a survey, the paper's methodology is a systematic literature review following
 The paper does not propose a new algorithm but formalizes the FL problem and the concept of data skew.
 
 - **Global Objective Function:** The core FL objective is defined as minimizing a weighted average of local loss functions:
-    $$
-    \min_{w} l(w) := h(L_k(w))
-    $$
-    where $w$ are the global model parameters, $L_k(w)$ is the local objective for client $k$, and $h$ is the aggregation function.
+
+  $$
+  \min_{w} l(w) := h(L_k(w))
+  $$
+
+  where $w$ are the global model parameters, $L_k(w)$ is the local objective for client $k$, and $h$ is the aggregation function.
 
 - **Federated Averaging (FedAvg):** The standard aggregation function is defined as:
-    $$
-    h(L_k(w)) = \sum_{k=1}^{K} \frac{n_k}{n} L_k(w)
-    $$
-    where $n_k$ is the size of client $k$'s dataset and $n$ is the total number of samples.
+
+  $$
+  h(L_k(w)) = \sum_{k=1}^{K} \frac{n_k}{n} L_k(w)
+  $$
+
+  where $n_k$ is the size of client $k$'s dataset and $n$ is the total number of samples.
 
 - **Formal Definition of Data Skew:** The paper defines data skew as a difference in the underlying probability density functions (pdfs) of client data:
-    $$
-    f^{(i)} \neq f^{(j)} \text{ for some } i, j \in \{1, \dots, K\}
-    $$
-    This is further broken down into **Label Skew** (differences in $f_Y$ or $f_{Y|X}$) and **Attribute Skew** (differences in $f_X$ or $f_{X|Y}$).
+
+  $$
+  f^{(i)} \neq f^{(j)} \text{ for some } i, j \in \{1, \dots, K\}
+  $$
+
+  This is further broken down into **Label Skew** (differences in $f_Y$ or $f_{Y|X}$) and **Attribute Skew** (differences in $f_X$ or $f_{X|Y}$).
 
 - **Non-IID Metrics:** The paper catalogs several metrics, including:
-    - **Heterogeneity Index (HI):** A class-based metric for label skew:
-        $$
-        HI = 1 - \frac{1}{(C_{\max} - 1)} \cdot (c - 1)
-        $$
-        where $c$ is the max number of classes per client and $C_{\max}$ is the total number of classes.
-    - **Imbalance Ratio (IR):** A metric for quantity skew:
-        $$
-        IR(\xi) = \frac{\max_i \xi_i}{\min_j \xi_j}
-        $$
-        where $\xi_i$ is the frequency of class $i$.
+  - **Heterogeneity Index (HI):** A class-based metric for label skew:
+
+    $$
+    HI = 1 - \frac{1}{(C_{\max} - 1)} \cdot (c - 1)
+    $$
+
+    where $c$ is the max number of classes per client and $C_{\max}$ is the total number of classes.
+
+  - **Imbalance Ratio (IR):** A class-based metric for label skew (measuring label distribution imbalance within the classes present on the clients):
+    $$
+    IR(\xi) = \frac{\max_i \xi_i}{\min_j \xi_j}
+    $$
+    where $\xi_i$ is the frequency of class $i$. It quantifies the imbalance between majority and minority classes rather than differences in total data volume across clients.
 
 ### 4. Limitations & Constraints
 
@@ -72,8 +82,8 @@ This survey is highly relevant to the FedMAQ thesis (Communication-Efficient FL 
 - **Problem Context:** The survey provides a strong theoretical and practical foundation for the core problem FedMAQ aims to solve: **communication inefficiency caused by non-IID data**. It confirms that non-IID data is a primary driver of increased communication rounds.
 - **Baseline Identification:** The paper can serve as a **critical resource for identifying baselines**. It reviews popular non-IID solutions like **FedProx**, **SCAFFOLD**, and **FedNova**. These are standard baselines against which FedMAQ's performance should be compared.
 - **Technique Integration:**
-    - **Knowledge Distillation (KD):** The survey explicitly identifies **Knowledge Distillation** as a key solution for non-IID data. This directly validates the KD component of FedMAQ. The paper notes that KD can reduce communication costs by exchanging soft labels (logits) instead of full model parameters.
-    - **Quantization & Compression:** The paper's "Future Directions" section explicitly calls for "designing advanced compression techniques tailored to model updates in non-IID environments." This directly aligns with the **quantization** component of FedMAQ. The survey provides the motivation for why adaptive quantization is needed: because the degree of heterogeneity varies, a one-size-fits-all compression strategy is suboptimal.
+  - **Knowledge Distillation (KD):** The survey explicitly identifies **Knowledge Distillation** as a key solution for non-IID data. This directly validates the KD component of FedMAQ. The paper notes that KD can reduce communication costs by exchanging soft labels (logits) instead of full model parameters.
+  - **Quantization & Compression:** The paper's "Future Directions" section explicitly calls for "designing advanced compression techniques tailored to model updates in non-IID environments." This directly aligns with the **quantization** component of FedMAQ. The survey provides the motivation for why adaptive quantization is needed: because the degree of heterogeneity varies, a one-size-fits-all compression strategy is suboptimal.
 - **Gap Analysis:** The survey highlights a gap in the literature: a lack of solutions that simultaneously address multiple types of skew. FedMAQ, by combining adaptive quantization (to handle varying update importance) and KD (to handle label/feature distribution differences), can be positioned as a holistic approach that tackles both communication efficiency and data heterogeneity.
 
 **In summary, this survey is not a baseline algorithm itself, but it is an essential reference for the FedMAQ thesis. It provides the problem motivation, identifies relevant baselines (FedProx, SCAFFOLD), validates the use of KD, and points to the need for adaptive compression techniques, which is the core innovation of FedMAQ.**

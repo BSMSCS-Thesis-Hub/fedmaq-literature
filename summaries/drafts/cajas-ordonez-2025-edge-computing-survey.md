@@ -29,5 +29,56 @@ The survey extracts formulas from the literature. Key mathematical expressions i
 
 ### 3.1 Quantization
 
-- **Post-training quantization** (INT8):  
-  $$Q(x) = \text{round}\left(\frac{x}{\Delta}\right) \cdot \Delta, \quad \Delta = \frac{\max(x) - \
+The survey outlines quantization as a key soft computing optimization technique that converts tensors from high-precision floating-point numbers (e.g., FP32) to lower-precision representations (e.g., INT8, INT4, INT2, or INT1/binary) to reduce the memory footprint and latency of edge inference.
+
+- **Post-Training Quantization (PTQ):** Applies quantization directly to weights and activations after training, which is simpler but can result in accuracy degradation. Extreme low-bit implementations (such as BitNet variants) replace floating-point matrix multiplications with integer addition.
+- **Quantization-Aware Training (QAT):** Simulates quantization noise during training, allowing the model to adapt and preserve accuracy more effectively.
+
+### 3.2 Performance Evaluation Metrics
+
+To evaluate edge AI systems, the survey details performance metrics across computational, resource, quality, and system-level dimensions:
+
+- **Computational Metrics:**
+  - **Latency ($L$):** Time elapsed from input arrival to output generation:
+    $$L = t_{\text{end}} - t_{\text{start}}$$
+  - **Throughput ($T$):** The number of operations processed per unit time:
+    $$T = \frac{N_{\text{operations}}}{t_{\text{elapsed}}}$$
+
+- **Resource Utilization Metrics:**
+  - **Energy per Inference ($E_{\text{inference}}$):**
+    $$E_{\text{inference}} = \frac{P_{\text{avg}} \times t_{\text{inference}}}{N_{\text{inferences}}}$$
+    where $P_{\text{avg}}$ is the average power consumption.
+  - **Memory Utilization ($M_{\text{util}}$):**
+    $$M_{\text{util}} = \frac{M_{\text{used}}}{M_{\text{total}}} \times 100\%$$
+
+- **Model Quality Metrics:**
+  - **Classification Metrics:**
+    $$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
+    $$\text{Precision} = \frac{TP}{TP + FP}$$
+    $$\text{Recall} = \frac{TP}{TP + FN}$$
+    $$\text{F1-score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+
+- **System-Level Metrics:**
+  - **Availability:**
+    $$\text{Availability} = \frac{\text{MTBF}}{\text{MTBF} + \text{MTTR}} \times 100\%$$
+    where $\text{MTBF}$ is mean time between failures and $\text{MTTR}$ is mean time to repair.
+
+### 3.3 Federated Learning Formulations
+
+Federated Learning (FL) is presented as a paradigm to train models collaboratively on decentralized edge nodes while preserving data privacy. The survey highlights several aggregation and personalization formulations:
+
+- **FedAvg:** Aggregates local client updates to update the global server model.
+- **FedProx:** Introduces a regularization term to restrict local updates close to the global model, addressing heterogeneous environments.
+- **FedPer / personalized FL:** Trains personalized local layers alongside shared base layers to handle client-specific data.
+- **Other variants:** FedOpt, SplitFL, FedTL, and FedEL.
+
+## 4. Limitations & Constraints
+
+- **Statistical Assumptions:** Edge deployments assume data is highly heterogeneous (non-IID) and susceptible to temporal fluctuations (concept drift/data drift). Statistical drift detection requires continuous window-based monitoring.
+- **System Constraints:** Real-time edge inference is constrained by battery life (energy consumption), limited local memory, and communication bandwidth. Edge hardware accelerators (NPUs, TPUs, FPGAs) must support low-precision arithmetic (e.g., INT4/INT8) to achieve target latencies.
+- **Security & Privacy:** Privacy protection mechanisms (such as hashing encryption) must balance communication overhead with security guarantees under spatial-temporal exposure risks.
+
+## 5. FedMAQ Thesis Relevance
+
+- **Baseline Context:** This survey serves as a comprehensive reference mapping the landscape of edge AI optimization. It systematically defines the baseline compression strategies (pruning, quantization, knowledge distillation) that FedMAQ combines.
+- **Integration Potential:** The evaluation metrics (latency, throughput, energy per inference, memory utilization) defined in the paper represent the exact target optimization parameters for FedMAQ. Furthermore, the survey's discussion of MLOps pipelines under drift and federated learning variants validates the multi-adaptive approach of FedMAQ in heterogeneous and dynamic environments.

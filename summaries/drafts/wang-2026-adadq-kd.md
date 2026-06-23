@@ -8,9 +8,9 @@ Here is the structured research summary of the paper "AdaDQ-KD: An Adaptive Dith
 
 - **Core Problem:** Federated Learning (FL) with Differential Privacy (DP) faces a critical trade-off between privacy, communication efficiency, and model accuracy. Standard DP noise injection degrades model performance, while communication bottlenecks are exacerbated by client heterogeneity (stragglers) and non-IID data.
 - **Main Objectives:**
-    1.  To improve training efficiency in privacy-preserving FL by reducing communication overhead.
-    2.  To mitigate the accuracy loss caused by DP noise injection and gradient quantization.
-    3.  To handle system heterogeneity (stragglers) and statistical heterogeneity (non-IID data) simultaneously.
+  1.  To improve training efficiency in privacy-preserving FL by reducing communication overhead.
+  2.  To mitigate the accuracy loss caused by DP noise injection and gradient quantization.
+  3.  To handle system heterogeneity (stragglers) and statistical heterogeneity (non-IID data) simultaneously.
 - **Proposed Solution:** The paper introduces **AdaDQ-KD**, an algorithm that integrates an adaptive dithering quantization (DQ) scheme with a knowledge distillation (KD) module to achieve a better trade-off among privacy, efficiency, and accuracy.
 
 ### 2. Methodology & Key Innovations
@@ -29,31 +29,31 @@ The AdaDQ-KD algorithm operates within a standard synchronous FL framework with 
 ### 3. Mathematical Formulation
 
 - **Global Objective:**
-    $$ \min_{w \in \mathbb{R}^m} F(w) := \frac{1}{P} \sum_{i=1}^{P} F_i(w) $$
+  $$ \min*{w \in \mathbb{R}^m} F(w) := \frac{1}{P} \sum*{i=1}^{P} F_i(w) $$
     where $F_i(w)$ is the local objective for client $i$.
 
 - **Local Training Objective (with KD):**
-    $$ \mathcal{L}_{\text{local}} = \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{KD}} $$
-    The local gradient is then $g_i^t = \nabla_w \mathcal{L}_{\text{local}}(w)$.
+  $$ \mathcal{L}_{\text{local}} = \mathcal{L}_{\text{CE}} + \lambda \mathcal{L}_{\text{KD}} $$
+  The local gradient is then $g_i^t = \nabla_w \mathcal{L}_{\text{local}}(w)$.
 
 - **Dithering Quantization (DQ) Process:**
-    - **Step Size:** $\Delta_i = 2 n_i \sigma \sqrt{v_i}$, where $v_i \sim \Gamma(3/2, 1/2)$, $\sigma$ is the target DP noise std, and $n_i$ is the **quantization precision coefficient**.
-    - **Quantization Function:** $q_i^t = Q(g_i^t + u_i)$, where $u_i \sim U(-\Delta_i/2, \Delta_i/2)$ and $Q(x) = \lceil x/\Delta_i - 1/2 \rfloor \Delta_i + \Delta_i/2$.
-    - **Noisy Estimation (Decoding):** $\hat{g}_i^t = q_i^t - u_i$.
-    - **Gaussian Noise Equivalence (Theorem 1):** The error from DQ is equivalent to Gaussian noise: $\hat{g}_i^t \sim g_i^t + \mathcal{N}(0, \mathbb{I}_m \sigma^2 / n_i^2)$.
+  - **Step Size:** $\Delta_i = 2 n_i \sigma \sqrt{v_i}$, where $v_i \sim \Gamma(3/2, 1/2)$, $\sigma$ is the target DP noise std, and $n_i$ is the **quantization precision coefficient**.
+  - **Quantization Function:** $q_i^t = Q(g_i^t + u_i)$, where $u_i \sim U(-\Delta_i/2, \Delta_i/2)$ and $Q(x) = \lceil x/\Delta_i - 1/2 \rfloor \Delta_i + \Delta_i/2$.
+  - **Noisy Estimation (Decoding):** $\hat{g}_i^t = q_i^t - u_i$.
+  - **Gaussian Noise Equivalence (Theorem 1):** The error from DQ is equivalent to Gaussian noise: $\hat{g}_i^t \sim g_i^t + \mathcal{N}(0, \mathbb{I}_m \sigma^2 n_{i,t}^2)$.
 
 - **Adaptive Precision Adjustment (Algorithm 1):**
-    - **Expected Local Delay:**
-        $$ \mathbb{E}(T_{i,t+1}^{loc}) = \mathbb{E}(T_{i,t+1}^{comp}) + \frac{\log_2(2\lceil \frac{C}{\Delta_{i,t+1}} + 1 \rceil)}{\log_2(2\lceil \frac{C}{\Delta_{i,t}} + 1 \rceil)} T_{i,t}^{comm} $$
-    - **Straggler Identification:** Clients are sorted by $\mathbb{E}(T_{i,t}^{loc})$. The top $K = \lfloor kP \rfloor$ clients are identified as stragglers.
-    - **Precision Reduction:** For each straggler, the precision coefficient $n_i$ is reduced by a search length $h$ until its expected delay is below a threshold $S$ (the delay of the $(K+1)$-th client).
+  - **Expected Local Delay:**
+    $$ \mathbb{E}(T*{i,t+1}^{loc}) = \mathbb{E}(T*{i,t+1}^{comp}) + \frac{\log*2(2\lceil \frac{C}{\Delta*{i,t+1}} + 1 \rceil)}{\log*2(2\lceil \frac{C}{\Delta*{i,t}} + 1 \rceil)} T\_{i,t}^{comm} $$
+  - **Straggler Identification:** Clients are sorted by $\mathbb{E}(T_{i,t}^{loc})$. The top $K = \lfloor kP \rfloor$ clients are identified as stragglers.
+  - **Precision Reduction:** For each straggler, the precision coefficient $n_i$ is reduced by a search length $h$ until its expected delay is below a threshold $S$ (the delay of the $(K+1)$-th client).
 
 - **Global Aggregation:**
-    $$ w^{t+1} = w^t - \alpha_t \left( \frac{1}{P} \sum_{i=1}^{P} \hat{g}_i^t \right) $$
+  $$ w^{t+1} = w^t - \alpha*t \left( \frac{1}{P} \sum*{i=1}^{P} \hat{g}\_i^t \right) $$
 
 - **Convergence Bound (Theorem 4):**
-    Under standard assumptions (L-smoothness, bounded gradients), the convergence is bounded by:
-    $$ \sum_{t=0}^{T-1} \mathbb{E}[ \| \nabla F(w^t) \|^2 ] \leq \frac{1}{P} (M^2 + \sigma^2) + \frac{2[F(w^0) - F_{inf}]}{\alpha_0 T} $$
+  Under standard assumptions (L-smoothness, bounded gradients), the convergence is bounded by:
+  $$ \sum*{t=0}^{T-1} \mathbb{E}[ \| \nabla F(w^t) \|^2 ] \leq \frac{1}{P} (M^2 + \sigma^2) + \frac{2[F(w^0) - F*{inf}]}{\alpha_0 T} $$
     where $M^2$ bounds the gradient variance and $\sigma^2$ is the DP noise variance.
 
 ### 4. Limitations & Constraints
@@ -70,7 +70,7 @@ This paper is **highly relevant** to the FedMAQ thesis (Communication-Efficient 
 
 - **Direct Baseline:** The proposed **AdaDQ-KD** algorithm is a direct and strong baseline for FedMAQ. It explicitly combines adaptive quantization and knowledge distillation to address the same core challenges: communication efficiency, privacy, and heterogeneity.
 - **Technique Integration:**
-    - **Adaptive Quantization:** The method of dynamically adjusting quantization precision based on client delay (straggler mitigation) is a key technique that can be integrated into FedMAQ's "Multi-Adaptive Quantization" component.
-    - **Knowledge Distillation:** The use of feature-level KD loss to mitigate accuracy loss from quantization and noise is a powerful technique that can be integrated into FedMAQ's KD module.
-    - **DQ for DP:** The concept of using dithering quantization to simultaneously achieve compression and DP is a novel and efficient approach that FedMAQ could adopt or compare against.
+  - **Adaptive Quantization:** The method of dynamically adjusting quantization precision based on client delay (straggler mitigation) is a key technique that can be integrated into FedMAQ's "Multi-Adaptive Quantization" component.
+  - **Knowledge Distillation:** The use of feature-level KD loss to mitigate accuracy loss from quantization and noise is a powerful technique that can be integrated into FedMAQ's KD module.
+  - **DQ for DP:** The concept of using dithering quantization to simultaneously achieve compression and DP is a novel and efficient approach that FedMAQ could adopt or compare against.
 - **Gap Addressed by FedMAQ:** While AdaDQ-KD is a strong baseline, it uses a single, global teacher model. FedMAQ could potentially improve upon this by exploring **multi-teacher KD** or **ensemble distillation** to provide more robust and personalized guidance across heterogeneous clients, further improving accuracy under high heterogeneity.
